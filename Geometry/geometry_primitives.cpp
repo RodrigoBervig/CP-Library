@@ -31,3 +31,27 @@ bool onseg(pt a, pt b, pt c) {
 	if(((b-a) ^ (c-a)) != 0) return false; //check that they are collinear first
 	return (b-a) * (c-a) >= 0 && (b-a) * (c-a) <= (b-a) * (b-a); //check that the projection is in the segment and is at most the size of the segment
 }
+
+//a e b pertencem a reta R
+double dist_point_line(pt a, pt b, pt p) {
+	pt ab = b - a, ap = p-a;
+
+	return abs(ab^ap)/dist(a,b);
+}
+
+//a e b são as extremidades do segmento R
+double dist_point_segment(pt a, pt b, pt p) {
+	pt ab = b-a, ap = p-a;
+	pt ba = a-b, bp = p-b;
+
+	//checa se o ponto p está entre duas retas perpedinculares às extremidades
+	if(ab * ap < 0) { //checa se está abixo de s
+		return dist(p, a);
+	}
+
+	if(ba * bp < 0) { //checa se está acima de t
+		return dist(p, b);
+	}
+
+	return dist_point_line(a, b, p);
+}
