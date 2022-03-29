@@ -15,94 +15,83 @@
 	}
 */
 
-
-
-#include <bits/stdc++.h>
-
-using namespace std; 
-
-//best implementation so far (exercise 3)
 //counts the number of minimum elements in the segment
 
 struct item {
-	int m, c;
+	int v;
 };
-
+ 
 struct segtree {
+ 
 	int size;
-	vector<item> values;
-
-	item NEUTRAL_ELEMENT = {INT_MAX, 0};
-
+	vector<item> t;
+ 
+	item neutral_element {INT_MAX};
+ 
 	item merge(item a, item b) {
-		if(a.m < b.m) return a;
-		if(b.m < a.m) return b;
-		return {a.m, a.c + b.c};
+		return {min(a.v, b.v)};
 	}
-
-	item single(int v){
-		return {v, 1};
+ 
+	item single(int v) {
+		return {v};
 	}
-
+ 
 	void init(int n) {
 		size = 1;
-		while(size < n) size *= 2;
-		values.resize(2 * size);
+		while(size < n) size <<= 1;
+		t.resize(2*size);
 	}
-
+ 
 	void build(vector<int> &a, int x, int lx, int rx) {
-		if(rx - lx == 1){
+		if(rx - lx == 1) {
 			if(lx < (int)a.size())
-				values[x] = single(a[lx]);
+				t[x] = single(a[lx]);
 			return;
 		}
-		int m = (lx + rx)/2;
-		build(a, 2*x+1, lx, m);
-		build(a, 2*x+2, m, rx);
-		values[x] = merge(values[2*x+1], values[2*x+2]);
-		
+		int mid = lx + (rx - lx)/2;
+		build(a, 2*x+1, lx, mid);
+		build(a, 2*x+2, mid, rx);
+		t[x] = merge(t[2*x+1], t[2*x+2]);
 	}
-
-	void build(vector<int> &a){
+ 
+	void build(vector<int> &a) {
 		build(a, 0, 0, size);
 	}
-
-	void set(int i, int v, int x, int lx, int rx) {
-		if(rx - lx == 1){
-			values[x] = single(v);
+ 
+	void update(int p, int value, int x, int lx, int rx) {
+		if(rx - lx == 1) {
+			t[x] = single(value);
 			return;
 		}
-
-		int m = (lx + rx) / 2;
-		if(i < m){
-			set(i, v, 2*x+1, lx, m);
+		int mid = lx + (rx-lx)/2;
+		if(p < mid) {
+			update(p, value, 2*x+1, lx, mid);
 		} else {
-			set(i, v, 2*x+2, m, rx);
+			update(p, value, 2*x+2, mid, rx);
 		}
-		values[x] = merge(values[2*x+1], values[2*x+2]);
+		t[x] = merge(t[2*x+1], t[2*x+2]);
 	}
-
-	void set(int i, int v){
-		set(i, v, 0, 0, size);
+ 
+	void update(int p, int value) {
+		update(p, value, 0, 0, size);
 	}
-
-	item calc(int l, int r, int x, int lx, int rx) {
-		if(lx >= r || l >= rx) return {INT_MAX,0};
-		if(lx >= l && rx <= r) return values[x];
-
-		int m = (lx + rx)/2;
-
-		item s1 = calc(l, r, 2*x+1, lx, m);
-		item s2 = calc(l, r, 2*x+2, m, rx);
-
-		return merge(s1,s2);
+ 
+	item query(int l, int r, int x, int lx, int rx) {
+		if(lx >= r || rx <= l) return neutral_element;
+		if(lx >= l && rx <= r) return t[x];
+		int mid = lx + (rx-lx)/2;
+		item s1 = query(l, r, 2*x+1, lx, mid);
+		item s2 = query(l, r, 2*x+2, mid, rx);
+		return merge(s1, s2);
 	}
-
-	item calc(int l, int r){
-		return calc(l, r, 0, 0, size);
+ 
+	item query(int l, int r) {
+		return query(l, r, 0, 0, size);
 	}
+ 
+ 
 };
-
+ 
 int main() {
 	ios_base::sync_with_stdio(false);
 	cin.tie(0);
@@ -135,3 +124,88 @@ int main() {
 		}
 	}
 }
+
+//segment with maximum sum
+struct item {
+	ll mx, pref, suf, sum;
+};
+
+struct segtree {
+	vector<item> t;
+	int size;
+
+	item merge(item a, item b) {
+		ll mx = max({a.mx, b.mx, a.suf + b.pref});
+		ll pref = max(a.pref, a.sum + b.pref);
+		ll suf = max(b.suf, b.sum + a.suf);
+		return {mx, pref, suf, a.sum + b.sum};
+	}
+
+	item single(int a) {
+		return {max(0,a), a, a, a};
+	}
+
+	void init(int n) {
+		size = 1;
+		while(size < n) size <<= 1;
+		t.resize(size * 2);
+	}
+
+	void build(vector<int> &a, int x, int lx, int rx) {
+		if(rx - lx == 1) {
+			if(lx < (int)a.size()) {
+				t[x] = single(a[lx]);
+			}
+			return;
+		}
+		int mid = lx + (rx -lx)/2;
+		build(a, 2*x+1, lx, mid);
+		build(a, 2*x+2, mid, rx);
+		t[x] = merge(t[2*x+1], t[2*x+2]);
+	}
+
+	void build(vector<int> &a) {
+		init((int)a.size());
+		build(a, 0, 0, size);
+	}
+
+
+	ll query() {
+		return t[0].mx;
+	}
+
+	void update(int p, int value, int x, int lx, int rx) {
+		if(rx - lx == 1) {
+			t[x] = single(value);
+			return;
+		}
+		int mid = lx + (rx -lx)/2;
+		if(mid <= p) {
+			update(p, value, 2*x+2, mid, rx);
+		} else update(p, value, 2*x+1, lx, mid);
+		t[x] = merge(t[2*x+1], t[2*x+2]);
+	}
+
+	void update(int p, int value) {
+		update(p, value, 0, 0, size);
+	}
+};
+
+void solve() {
+	int n, m;
+	cin >> n >> m;
+	vector<int> a(n);
+	for(int i = 0; i < n; i++) cin >> a[i];
+	
+	segtree st;
+	st.build(a);
+
+	int i, v;
+	cout << st.query() << "\n";
+	while(m--) {
+		cin >> i >> v;
+		st.update(i, v);
+		cout << st.query() << "\n";
+	}
+}
+
