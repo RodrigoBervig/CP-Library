@@ -15,7 +15,7 @@ long double norm(pt p) { return sqrt(p * p); }
 long double dist(pt p1, pt p2) { return norm(p1 - p2); }
 
 //vectors
-long double angle(pt p1, pt p2) { return acos((p1*p2)/(norm(a) * norm(b))); }
+long double angle(pt p1, pt p2) { return acos((p1*p2)/(norm(p1) * norm(p2))); }
 bool are_perpendicular(pt p1, pt p2) { return p1 * p2 == 0; } // checar problemas de precisão aqui depois
 bool are_collinear(pt p1, pt p2) { return (p1 ^ p2) == 0; }
 bool clockwise(pt p1, pt p2) { return (p1 ^ p2) < 0; }
@@ -27,6 +27,7 @@ bool segment_intersect(pt p1, pt p2, pt p3, pt p4) {
 	bool condition2 = clockwise(p4-p3, p1-p3) != clockwise(p4-p3, p2-p3);
 	return (condition2 && condition1);
 }
+
 bool onseg(pt a, pt b, pt c) {
 	if(((b-a) ^ (c-a)) != 0) return false; //check that they are collinear first
 	return (b-a) * (c-a) >= 0 && (b-a) * (c-a) <= (b-a) * (b-a); //check that the projection is in the segment and is at most the size of the segment
@@ -45,7 +46,7 @@ double dist_point_segment(pt a, pt b, pt p) {
 	pt ba = a-b, bp = p-b;
 
 	//checa se o ponto p está entre duas retas perpedinculares às extremidades
-	if(ab * ap < 0) { //checa se está abixo de s
+	if(ab * ap < 0) { //checa se está abaixo de s
 		return dist(p, a);
 	}
 
