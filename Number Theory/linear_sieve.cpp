@@ -11,7 +11,7 @@ void linear_sieve() {
 		
 		for(int j = 0; primes[j] * i <= N; j++) {
 			least_prime[i*primes[j]] = primes[j];
-			if(primes[j] == i) break;
+			if(primes[j] == least_prime[i]) break;
 		}
 	}
 

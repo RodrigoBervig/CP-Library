@@ -12,3 +12,5 @@ void floydWarshall(){
 			for(int j = 1; j <=n j++)
 				dist[i][j] = min(dist[i][j], dist[k][i] + dist[k][j]);
 }
+
+//to check if a negative cycle exists, check the diagonal and see if there is a negative value
