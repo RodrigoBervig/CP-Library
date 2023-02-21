@@ -37,7 +37,7 @@ struct segtree {
 	}
 
 	void build(vector<int> &a) {
-		build(1, 1, a.size(), a);
+		build(1, 1, a.size()-1, a);
 	}
 
 	void update(int x, int lx, int rx, int p, int v) {

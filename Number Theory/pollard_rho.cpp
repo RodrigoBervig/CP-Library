@@ -10,6 +10,9 @@
 // rho - esperado O(n^(1/4)) no pior caso
 // fact - esperado menos que O(n^(1/4) log(n)) no pior caso
 
+
+//this is a 100% taken from ufmg
+
 ll mul(ll a, ll b, ll m) {
 	ll ret = a*b - ll((long double)1/m*a*b+0.5)*m;
 	return ret < 0 ? ret+m : ret;
