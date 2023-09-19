@@ -6,6 +6,8 @@ vector<int> sz, height, heavy_child, chain, in;
 int parent[maxN][logN];
 segtree st;
 
+//segtree, lca, binary lifiting, dfs, linearizacao de arvores, conceito (small to large)
+
 //compute heavy children and necessary things
 void dfs(int u, vector<vector<int>> &adj) {
 	for(int i = 1; i < logN; i++) {

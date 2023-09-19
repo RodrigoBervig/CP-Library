@@ -11,7 +11,8 @@ using namespace std;
 #define s second
 typedef long long ll;
 typedef unsigned long long ull; 
- 
+
+//lazy de soma, arrumar a função caso queiro mudar, dá pra fazer min e max fácil
 struct item {
 	long long sum, lazy;
 };
@@ -50,12 +51,13 @@ struct segtree {
 	void build(vector<int> &a) {
 		build(1, 1, size, a);
 	}
- 
+
 	void refresh(int x, int lx, int rx) {
 		if(st[x].lazy == 0) return;
 		
 		long long val = st[x].lazy;
 		st[x].sum += (rx-lx+1)*val;
+		st[x].lazy = 0;
 	
 		if(rx == lx) return;
 
@@ -84,7 +86,7 @@ struct segtree {
 		st[x].sum = st[2*x].sum + st[2*x+1].sum;
 	}
  
-	void update_segment(int l, int r, int v) {
+	void update_segment(int l, int r, long long v) {
 		update_segment(1, 1, size, l, r, v);
 	}
  
